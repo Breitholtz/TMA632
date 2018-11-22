@@ -1,4 +1,4 @@
-from dolfin import *
+from fenics import *
 import numpy as np
 # Source term
 
@@ -32,17 +32,17 @@ mesh=IntervalMesh(10,0,2*DOLFIN_PI)
 V = FunctionSpace(mesh,"CG",1,constrained_domain=PeriodicBoundary())
 
 # def initial value
-u_0= # what should we have here?
+u_0=Constant(1)
 u_n=interpolate(u_0,V)
 
 
 # variational problem
-A=1
-B=1
+A=1.0
+B=1.0
 u=TrialFunction(V)
 v=TestFunction(V)
 f=Constant(0)     #Source term
-a= A*inner(grad(u),grad(v))-B*inner(grad(u),v) 
+a= A*dot(grad(u),grad(v))*dx-B*dot(grad(u),v)*dx 
 L=f*v*dx
 
 # time stepping
