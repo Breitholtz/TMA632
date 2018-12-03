@@ -20,7 +20,15 @@ class PeriodicBoundary(SubDomain):
 		y[0]=x[0]-1.0
 		y[1]=x[1]
 
-	# TODO: up maps to down
+	# lower boundary
+	def inside2(self,x,on_boundary):
+		return bool(x[1]<DOLFIN_EPS and x[1]>-DOLFIN_EPS and on_boundary)
+
+	# map upper to lower
+	def map2(self,x,y):
+		y[0]=x[0]
+		y[1]=y[1]-1.0
+
 # Create mesh and define function space
 nx = ny = 8
 mesh = UnitSquareMesh(nx, ny)
