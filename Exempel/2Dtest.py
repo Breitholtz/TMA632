@@ -7,8 +7,6 @@ import numpy as np
 T = 2.0            # final time
 num_steps = 10     # number of time steps
 dt = T / num_steps # time step size
-alpha = 3          # parameter alpha
-beta = 1.2         # parameter beta
 
 # define periodic bc's
 class PeriodicBoundary(SubDomain):
@@ -22,7 +20,7 @@ class PeriodicBoundary(SubDomain):
 		y[0]=x[0]-1.0
 		y[1]=x[1]
 
-
+	# TODO: up maps to down
 # Create mesh and define function space
 nx = ny = 8
 mesh = UnitSquareMesh(nx, ny)
@@ -66,7 +64,10 @@ for n in range(num_steps):
 
     # Update previous solution
     u_n.assign(u)
-
+	# TODO save solutions for every timestep
 print("all done!" )
 file=File("periodictest.pvd")
 file << u 
+
+# TODO: compute error against known function in L2 and H1 norms
+
