@@ -14,7 +14,7 @@ beta = 1.2         # parameter beta
 class PeriodicBoundary(SubDomain):
 	
 	#left boundary
-	def inside(sellf,x,on_boundary):
+	def inside(self,x,on_boundary):
 		return bool(x[0]< DOLFIN_EPS and x[0]>-DOLFIN_EPS and on_boundary)
 
 	# map right boundary onto left
@@ -47,8 +47,9 @@ u_n = interpolate(Constant(1), V)
 u = TrialFunction(V)
 v = TestFunction(V)
 f = Constant(0)
+B= Expression("x[0]","0",degree=3) # velocity field for convection
 
-F = u*v*dx + dt*dot(grad(u), grad(v))*dx - (u_n + dt*f)*v*dx
+F = dt*dot(B,grad(u))*v*dx + dt*dot(grad(u), grad(v))*dx - (u_n + dt*f)*v*dx 
 a, L = lhs(F), rhs(F)
 
 # Time-stepping
