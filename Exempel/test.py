@@ -1,34 +1,9 @@
-# This demo program solves Poisson's equation
+# Computing the 1D case of the convection-diffusion equation
 #
-#     - div grad u(x, y) = f(x, y)
+#     u_t - u_xx + u_x = f(x, t)
 #
-# on the unit square with homogeneous Dirichlet boundary conditions
-# at y = 0, 1 and periodic boundary conditions at x = 0, 1.
-#
-# Original implementation: ../cpp/main.cpp by Anders Logg
-#
-# Copyright (C) 2007 Kristian B. Oelgaard
-#
-# This file is part of DOLFIN.
-#
-# DOLFIN is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# DOLFIN is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with DOLFIN. If not, see <http://www.gnu.org/licenses/>.
-#
-# Modified by Anders Logg 2011
-#
-# First added:  2007-11-15
-# Last changed: 2012-11-12
-# Begin demo
+# on the interval [0,2*PI] with periodic boundary conditions.
+# Initial value is u_0 = sin(x) and f = e^(-t)*cos(x).
 
 from dolfin import *
 import matplotlib.pyplot as plt
@@ -47,10 +22,10 @@ class PeriodicBoundary(SubDomain):
 
     # Map right boundary (H) to left boundary (G)
     def map(self, x, y):
-        y[0] = x[0] - 1.0
+        y[0] = x[0] - 2*DOLFIN_PI
 
 # Create mesh and finite element
-mesh = IntervalMesh(32, 0, 2*DOLFIN_PI)
+mesh = IntervalMesh(64, 0, 2*DOLFIN_PI)
 V = FunctionSpace(mesh, "CG", 1, constrained_domain=PeriodicBoundary())
 
 # Define variational problem
@@ -62,16 +37,10 @@ f = Expression('exp(-t)*cos(x[0])', degree=2, t=0)
 u_n = interpolate(u_0, V)
 
 a = u*v*dx + dt*dot(grad(u), grad(v))*dx + dt*u.dx(0)*v*dx
-L = (u_n+ dt*f)*v*dx
-
+L = (u_n + dt*f)*v*dx
 
 # Create VTK file for saving solution
 vtkfile = File('test/solution.pvd')
-
-# Compute solution
-#u = Function(V)
-#solve(a == L, u)
-# Time-stepping
 
 u = Function(V)
 t = 0
@@ -87,7 +56,10 @@ for n in range(num_steps):
 
     # Save to file and plot solution
     vtkfile << (u, t)
-    plot(u)
+    ua=u.vector().array()
+    x = V.tabulate_dof_coordinates()
+    i = np.argsort(x)
+    plt.plot(x[i],ua[i]);
 
     # Compute error at vertices
     u_e = interpolate(u_0, V)
@@ -97,3 +69,5 @@ for n in range(num_steps):
     # Update previous solution
     u_n.assign(u)
 
+# Save plot
+plt.savefig("test.png")
