@@ -30,14 +30,14 @@ class PeriodicBoundary(SubDomain):
 		y[1]=y[1]-1.0
 
 # Create mesh and define function space
-nx = ny = 8
+nx = ny =20 
 mesh = UnitSquareMesh(nx, ny)
 V = FunctionSpace(mesh, 'P', 1,constrained_domain=PeriodicBoundary())
 
 
 
 # Define initial boundary condition
-u_0 = Expression('exp(t)*sin(x[0])*cos(x[1])',
+u_0 = Expression("exp(t)*sin(x[0])*cos(x[1])",
                  degree=2, t=0)
 
 def boundary(x, on_boundary):
@@ -54,7 +54,9 @@ u = TrialFunction(V)
 v = TestFunction(V)
 f = Constant(0)
 B= Constant(tuple((1,1))) # velocity field
+u_exact=Expression("sin(x[0])",degree=2) # exact solution, if known, for error estimation
 
+# Break problem into functionals
 F = u*v*dx + dt*dot(B,grad(u))*v*dx + dt*dot(grad(u), grad(v))*dx - (u_n + dt*f)*v*dx 
 a, L = lhs(F), rhs(F)
 
@@ -62,17 +64,27 @@ a, L = lhs(F), rhs(F)
 u = Function(V)
 t = 0
 for n in range(num_steps):
+	
+ # Update current time
+ t += dt
+ u_0.t = t
 
-    # Update current time
-    t += dt
-    u_0.t = t
+ # Compute solution
+ solve(a == L, u, bc) 
 
-    # Compute solution
-    solve(a == L, u, bc) 
+ # Update previous solution
+ u_n.assign(u)
 
-    # Update previous solution
-    u_n.assign(u)
-	# TODO save solutions for every timestep
+ #compute error in L2 and H1 norm
+ L2norm=errornorm(u_exact,u,norm_type="L2",degree_rise=1,mesh=mesh)
+ H1norm=errornorm(u_exact,u,norm_type="H1",degree_rise=1,mesh=mesh)
+ h=mesh.hmax()
+ print("L2error:", L2norm)
+ print("H1error:", H1norm)
+ print("h=", h)
+
+ # TODO save solutions for every timestep
+	
 print("all done!" )
 file=File("periodictest.pvd")
 file << u 
