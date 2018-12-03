@@ -45,9 +45,9 @@ u_n = interpolate(u_0, V)
 u = TrialFunction(V)
 v = TestFunction(V)
 f = Constant(0)
-B= Constant((1,1)) # velocity field
+B= Constant(tuple((1,1))) # velocity field
 
-F = dt*dot(B,grad(u))*v*dx + dt*dot(grad(u), grad(v))*dx - (u_n + dt*f)*v*dx 
+F = u*v*dx + dt*dot(B,grad(u))*v*dx + dt*dot(grad(u), grad(v))*dx - (u_n + dt*f)*v*dx 
 a, L = lhs(F), rhs(F)
 
 # Time-stepping
