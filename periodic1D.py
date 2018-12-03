@@ -28,8 +28,9 @@ class PeriodicBoundary(SubDomain):
 
 # mesh and function space
 
-mesh=IntervalMesh(10,0,2*DOLFIN_PI)
-V = FunctionSpace(mesh,"CG",1,constrained_domain=PeriodicBoundary())
+mesh=RectangleMesh(Point(0,0),Point(2*DOLFIN_PI,2*DOLFIN_PI),10,10,"left/right")
+
+V = FunctionSpace(mesh,"P",1,constrained_domain=PeriodicBoundary())
 
 # def initial value
 u_0=Constant(1)
@@ -37,12 +38,12 @@ u_n=interpolate(u_0,V)
 
 
 # variational problem
-A=1.0
-B=1.0
+A=Constant(1)
+B=Constant(1)
 u=TrialFunction(V)
 v=TestFunction(V)
 f=Constant(0)     #Source term
-a= A*dot(grad(u),grad(v))*dx-B*dot(grad(u),v)*dx 
+a=  -B*grad(u)*v*dx      # A*grad(u)*grad(v)*dx   # -B*grad(u)*v*dx 
 L=f*v*dx
 
 # time stepping
