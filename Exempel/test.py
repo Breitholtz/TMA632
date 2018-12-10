@@ -37,7 +37,7 @@ u_0 = Expression('exp(-t)*sin(x[0])', degree=2, t=0)
 f = Expression('exp(-t)*cos(x[0])', degree=2, t=0)
 u_n = project(u_0, V)
 
-b = Expression('x[0]*x[0]', degree=2)
+b = Expression('x[0]*sin(x[0])', degree=2)
 
 a = u*v*dx + dt*dot(grad(u), grad(v))*dx + dt*b*grad(u)[0]*v*dx
 L = (u_n + dt*dot(b,f))*v*dx
@@ -73,4 +73,4 @@ for n in range(num_steps):
     u_n.assign(u)
 
 # Save plot
-plt.savefig("test.png")
+plt.savefig("test/solution1D.png")
