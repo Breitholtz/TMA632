@@ -71,7 +71,7 @@ a = u*v*dx + dt*dot(grad(u), grad(v))*dx + dt*dot(b,grad(u))*v*dx
 L = (u_n + dt*dot(b,f))*v*dx
 
 # Create VTK file for saving solution
-vtkfile = File('test/solution3D.pvd')
+vtkfile = File('full/solution3D.pvd')
 
 u = Function(V)
 t = 0.0

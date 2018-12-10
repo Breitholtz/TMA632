@@ -43,7 +43,7 @@ a = u*v*dx + dt*dot(grad(u), grad(v))*dx + dt*b*grad(u)[0]*v*dx
 L = (u_n + dt*dot(b,f))*v*dx
 
 # Create VTK file for saving solution
-vtkfile = File('test/solution1D.pvd')
+vtkfile = File('full/solution1D.pvd')
 
 u = Function(V)
 t = 0.0
@@ -73,4 +73,4 @@ for n in range(num_steps):
     u_n.assign(u)
 
 # Save plot
-plt.savefig("test/solution1D.png")
+plt.savefig("full/solution1D.png")

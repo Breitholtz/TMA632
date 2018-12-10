@@ -52,7 +52,7 @@ a = u*v*dx + dt*dot(grad(u), grad(v))*dx + dt*dot(b,grad(u))*v*dx
 L = (u_n + dt*dot(b,f))*v*dx
 
 # Create VTK file for saving solution
-vtkfile = File('test/solution2D.pvd')
+vtkfile = File('full/solution2D.pvd')
 
 u = Function(V)
 t = 0.0
