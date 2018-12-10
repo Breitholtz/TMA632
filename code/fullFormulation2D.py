@@ -42,8 +42,8 @@ V = FunctionSpace(mesh, "P", 1, constrained_domain=PeriodicBoundary())
 u = TrialFunction(V)
 v = TestFunction(V)
 
-u_0 = Expression('exp(-t)*(sin(x[0]) + cos(x[1]))', degree=2, t=0)
-f = Expression(('exp(-t)*cos(x[0])','-exp(-t)*sin(x[1])'), degree=2, t=0)
+u_0 = Expression('exp(-t)*(sin(x[0]) + cos(x[1]))', degree=4, t=0)
+f = Expression(('exp(-t)*cos(x[0])','-exp(-t)*sin(x[1])'), degree=4, t=0)
 u_n = project(u_0, V)
 
 b = Expression(('x[0]*x[0]*sin(x[1])','x[1]*x[1]*cos(x[0])'), degree=2)
@@ -75,8 +75,10 @@ for n in range(num_steps):
 
     # Compute error at vertices
     u_e = project(u_0, V)
-    error = np.abs(u_e.vector().array() - u.vector().array()).max()
-    print('t = %.2f: error = %.3g' % (t, error))
+    error_max = np.abs(u_e.vector().array() - u.vector().array()).max()
+    error_L2 = errornorm(u_0,u,'L2')
+    error_H1 = errornorm(u_0,u,'H1')
+    print('t = %.2f:\nError_max = %.3g\tError_L2 = %.3g\tError_H1 = %.3g' % (t, error_max, error_L2, error_H1))
 
     # Update previous solution
     u_n.assign(u)
