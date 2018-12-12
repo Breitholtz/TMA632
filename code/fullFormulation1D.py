@@ -43,7 +43,7 @@ a = u*v*dx + dt*dot(grad(u), grad(v))*dx + dt*b*grad(u)[0]*v*dx
 L = (u_n + dt*dot(b,f))*v*dx
 
 # Create VTK file for saving solution
-vtkfile = File('full/solution1D.pvd')
+vtkfile = File('1Dfull/solution1D.pvd')
 
 u = Function(V)
 t = 0.0
@@ -59,14 +59,14 @@ for n in range(num_steps):
 
     # Save to file and plot solution
     vtkfile << (u, t)
-    ua=u.vector().array()
-    x = V.tabulate_dof_coordinates()
+    ua=u.vector().get_local()
+    x = V.tabulate_dof_coordinates().reshape(nx)
     i = np.argsort(x)
     plt.plot(x[i],ua[i]);
 
     # Compute error at vertices
     u_e = project(u_0, V)
-    error_max = np.abs(u_e.vector().array() - u.vector().array()).max()
+    error_max = np.abs(u_e.vector().get_local() - u.vector().get_local()).max()
     error_L2 = errornorm(u_0,u,'L2')
     error_H1 = errornorm(u_0,u,'H1')
     print('t = %.2f:\nError_max = %.3g\tError_L2 = %.3g\tError_H1 = %.3g' % (t, error_max, error_L2, error_H1))
@@ -75,4 +75,4 @@ for n in range(num_steps):
     u_n.assign(u)
 
 # Save plot
-plt.savefig("full/solution1D.png")
+plt.savefig("1Dfull/solution1D.png")
